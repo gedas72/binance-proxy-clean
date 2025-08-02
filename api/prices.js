@@ -1,19 +1,23 @@
-export default async function handler(request, response) {
-  const { url } = request.query;
+export default async function handler(req, res) {
+  const url = req.query.url;
 
   if (!url) {
-    return response.status(400).json({ error: 'Missing url parameter' });
+    return res.status(400).json({ error: 'Missing url parameter' });
   }
 
   try {
-    const result = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
     });
-    const data = await result.text();
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    response.setHeader('Content-Type', 'application/json');
-    return response.status(200).send(data);
-  } catch (err) {
-    return response.status(500).json({ error: err.message });
+
+    const data = await response.text();
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
